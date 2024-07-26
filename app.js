@@ -34,4 +34,8 @@ if (connector.connected) {
 }
 
 // Initialize Telegram Mini App
-window.Telegram.WebApp.ready();
+if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+} else {
+    console.error('Telegram WebApp is not available');
+}
