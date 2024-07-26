@@ -14,6 +14,7 @@ function loadScript(src) {
         script.onload = resolve;
         script.onerror = reject;
         document.head.appendChild(script);
+        debug('TonConnect SDK loaded finished');
     });
 }
 
