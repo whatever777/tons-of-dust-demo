@@ -6,6 +6,26 @@ function debug(message) {
     console.log(`[${timestamp}] ${message}`);
 }
 
+function checkSDKLoaded() {
+    debug('Checking if TonConnect SDK is loaded');
+    if (typeof TonConnect === 'undefined') {
+        debug('TonConnect is undefined. Attempting to load manually.');
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@tonconnect/sdk@2.1.3/dist/tonconnect-sdk.min.js';
+        script.onload = function() {
+            debug('TonConnect SDK loaded manually');
+            initializeTonConnect();
+        };
+        script.onerror = function() {
+            debug('Failed to load TonConnect SDK manually');
+        };
+        document.head.appendChild(script);
+    } else {
+        debug('TonConnect SDK is already loaded');
+        initializeTonConnect();
+    }
+}
+
 // 初始化函数
 function initializeTonConnect() {
     debug('Initializing TonConnect');
@@ -51,7 +71,7 @@ function initializeTonConnect() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeTonConnect);
 } else {
-    initializeTonConnect();
+    checkSDKLoaded();
 }
 
 // Telegram WebApp 初始化
