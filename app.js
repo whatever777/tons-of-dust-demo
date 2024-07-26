@@ -69,7 +69,7 @@ function initializeTonConnect() {
 
 // 等待页面加载完成后初始化
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeTonConnect);
+    document.addEventListener('DOMContentLoaded', checkSDKLoaded);
 } else {
     checkSDKLoaded();
 }
