@@ -1,5 +1,5 @@
 const connector = new TonConnect.TonConnect({
-    manifestUrl: 'https://你的GitHub用户名.github.io/tons-of-dust-demo/manifest.json'
+    manifestUrl: 'https://whatever777.github.io/tons-of-dust-demo/manifest.json'
 });
 
 document.getElementById('connectWallet').addEventListener('click', connectWallet);
