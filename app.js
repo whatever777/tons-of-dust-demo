@@ -11,11 +11,14 @@ async function connectWallet() {
             universalLink: 'https://app.tonkeeper.com/ton-connect',
             bridgeUrl: 'https://bridge.tonapi.io/bridge'
         };
-        
+
+        console.log('Attempting to connect...');
         await connector.connect(walletConnectionSource);
-        
+
+        console.log('Connection successful');
         const walletInfo = connector.wallet;
         if (walletInfo) {
+            console.log('Wallet info:', walletInfo);
             document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
         }
     } catch (error) {
