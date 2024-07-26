@@ -6,60 +6,71 @@ function debug(message) {
     console.log(`[${timestamp}] ${message}`);
 }
 
-function checkSDKLoaded() {
+// 在文件开头添加
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+async function checkSDKLoaded() {
     debug('Checking if TonConnect SDK is loaded');
     if (typeof TonConnect === 'undefined') {
         debug('TonConnect is undefined. Attempting to load manually.');
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@tonconnect/sdk@2.1.3/dist/tonconnect-sdk.min.js';
-        script.onload = function() {
+        try {
+            await loadScript('https://unpkg.com/@tonconnect/sdk@2.1.3/dist/tonconnect-sdk.min.js');
             debug('TonConnect SDK loaded manually');
-            initializeTonConnect();
-        };
-        script.onerror = function() {
-            debug('Failed to load TonConnect SDK manually');
-        };
-        document.head.appendChild(script);
+            await initializeTonConnect();
+        } catch (error) {
+            debug(`Failed to load TonConnect SDK manually: ${error.message}`);
+        }
     } else {
         debug('TonConnect SDK is already loaded');
-        initializeTonConnect();
+        await initializeTonConnect();
     }
 }
 
-// 初始化函数
-function initializeTonConnect() {
+async function initializeTonConnect() {
     debug('Initializing TonConnect');
     if (typeof TonConnect !== 'undefined') {
         debug('TonConnect SDK loaded successfully');
-        const connector = new TonConnect.TonConnect({
-            manifestUrl: 'https://whatever777.github.io/tons-of-dust-demo/manifest.json'
-        });
-        debug('TonConnect instance created');
+        try {
+            const connector = new TonConnect.TonConnect({
+                manifestUrl: 'https://whatever777.github.io/tons-of-dust-demo/manifest.json'
+            });
+            debug('TonConnect instance created');
 
-        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
 
-        async function connectWallet() {
-            debug('Connect wallet button clicked');
-            try {
-                const walletConnectionSource = {
-                    universalLink: 'https://app.tonkeeper.com/ton-connect',
-                    bridgeUrl: 'https://bridge.tonapi.io/bridge'
-                };
-                
-                debug('Attempting to connect to wallet');
-                await connector.connect(walletConnectionSource);
-                
-                debug('Wallet connected successfully');
-                const walletInfo = connector.wallet;
-                if (walletInfo) {
-                    debug(`Wallet info received: ${JSON.stringify(walletInfo)}`);
-                    document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
+            async function connectWallet() {
+                debug('Connect wallet button clicked');
+                try {
+                    const walletConnectionSource = {
+                        universalLink: 'https://app.tonkeeper.com/ton-connect',
+                        bridgeUrl: 'https://bridge.tonapi.io/bridge'
+                    };
+                    
+                    debug('Attempting to connect to wallet');
+                    await connector.connect(walletConnectionSource);
+                    
+                    debug('Wallet connected successfully');
+                    const walletInfo = connector.wallet;
+                    if (walletInfo) {
+                        debug(`Wallet info received: ${JSON.stringify(walletInfo)}`);
+                        document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
+                    }
+                } catch (error) {
+                    debug(`Connection error: ${error.message}`);
+                    console.error('Connection error:', error);
+                    document.getElementById('walletStatus').textContent = 'Connection failed';
                 }
-            } catch (error) {
-                debug(`Connection error: ${error.message}`);
-                console.error('Connection error:', error);
-                document.getElementById('walletStatus').textContent = 'Connection failed';
             }
+        } catch (error) {
+            debug(`Error initializing TonConnect: ${error.message}`);
         }
     } else {
         debug('TonConnect SDK not loaded');
@@ -67,7 +78,7 @@ function initializeTonConnect() {
     }
 }
 
-// 等待页面加载完成后初始化
+// 修改页面加载完成后的初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', checkSDKLoaded);
 } else {
