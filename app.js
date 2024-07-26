@@ -1,82 +1,68 @@
-
-async function connectWallet() {
-    try {
-        console.log('Connect wallet function called');
-        const walletConnectionSource = {
-            universalLink: 'https://app.tonkeeper.com/ton-connect',
-            bridgeUrl: 'https://bridge.tonapi.io/bridge'
-        };
-
-        console.log('Attempting to connect...');
-        await connector.connect(walletConnectionSource);
-
-        console.log('Connection successful');
-        const walletInfo = connector.wallet;
-        if (walletInfo) {
-            console.log('Wallet info:', walletInfo);
-            document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
-        }
-    } catch (error) {
-        console.error('Connection error:', error);
-        document.getElementById('walletStatus').textContent = 'Connection failed';
-    }
+// 调试函数
+function debug(message) {
+    const debugElement = document.getElementById('debug');
+    const timestamp = new Date().toLocaleTimeString();
+    debugElement.innerHTML += `[${timestamp}] ${message}<br>`;
+    console.log(`[${timestamp}] ${message}`);
 }
 
-// Check if wallet is already connected
-if (connector.connected) {
-    const walletInfo = connector.wallet;
-    document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
-}
-
+// 初始化函数
 function initializeTonConnect() {
-  if (typeof TonConnect !== 'undefined') {
-    const connector = new TonConnect.TonConnect({
-      manifestUrl: 'https://whatever777.github.io/tons-of-dust-demo/manifest.json'
-    });
+    debug('Initializing TonConnect');
+    if (typeof TonConnect !== 'undefined') {
+        debug('TonConnect SDK loaded successfully');
+        const connector = new TonConnect.TonConnect({
+            manifestUrl: 'https://whatever777.github.io/tons-of-dust-demo/manifest.json'
+        });
+        debug('TonConnect instance created');
 
-    document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
 
-    async function connectWallet() {
-      try {
-        const walletConnectionSource = {
-          universalLink: 'https://app.tonkeeper.com/ton-connect',
-          bridgeUrl: 'https://bridge.tonapi.io/bridge'
-        };
-        
-        await connector.connect(walletConnectionSource);
-        
-        const walletInfo = connector.wallet;
-        if (walletInfo) {
-          document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
+        async function connectWallet() {
+            debug('Connect wallet button clicked');
+            try {
+                const walletConnectionSource = {
+                    universalLink: 'https://app.tonkeeper.com/ton-connect',
+                    bridgeUrl: 'https://bridge.tonapi.io/bridge'
+                };
+                
+                debug('Attempting to connect to wallet');
+                await connector.connect(walletConnectionSource);
+                
+                debug('Wallet connected successfully');
+                const walletInfo = connector.wallet;
+                if (walletInfo) {
+                    debug(`Wallet info received: ${JSON.stringify(walletInfo)}`);
+                    document.getElementById('walletStatus').textContent = `Connected: ${walletInfo.account.address}`;
+                }
+            } catch (error) {
+                debug(`Connection error: ${error.message}`);
+                console.error('Connection error:', error);
+                document.getElementById('walletStatus').textContent = 'Connection failed';
+            }
         }
-      } catch (error) {
-        console.error('Connection error:', error);
-        document.getElementById('walletStatus').textContent = 'Connection failed';
-      }
+    } else {
+        debug('TonConnect SDK not loaded');
+        document.getElementById('walletStatus').textContent = 'TonConnect SDK not available';
     }
-  } else {
-    console.error('TonConnect SDK not loaded');
-    document.getElementById('walletStatus').textContent = 'TonConnect SDK not available';
-  }
 }
 
 // 等待页面加载完成后初始化
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeTonConnect);
+    document.addEventListener('DOMContentLoaded', initializeTonConnect);
 } else {
-  initializeTonConnect();
+    initializeTonConnect();
 }
 
 // Telegram WebApp 初始化
 if (window.Telegram && window.Telegram.WebApp) {
-  window.Telegram.WebApp.ready();
-} else {
-  console.error('Telegram WebApp is not available');
-}
-
-// Initialize Telegram Mini App
-if (window.Telegram && window.Telegram.WebApp) {
+    debug('Telegram WebApp is available');
     window.Telegram.WebApp.ready();
 } else {
-    console.error('Telegram WebApp is not available');
+    debug('Telegram WebApp is not available');
 }
+
+// 添加一些额外的调试信息
+debug('App script loaded');
+debug(`User Agent: ${navigator.userAgent}`);
+debug(`Screen size: ${window.screen.width}x${window.screen.height}`);
