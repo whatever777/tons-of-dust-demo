@@ -6,6 +6,7 @@ document.getElementById('connectWallet').addEventListener('click', connectWallet
 
 async function connectWallet() {
     try {
+        console.log('Connect wallet function called');
         const walletConnectionSource = {
             universalLink: 'https://app.tonkeeper.com/ton-connect',
             bridgeUrl: 'https://bridge.tonapi.io/bridge'
