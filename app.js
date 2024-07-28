@@ -11,7 +11,7 @@ function debug(message) {
 async function initializeTonConnect() {
   debug('Initializing TonConnect');
   try {
-    const connector = new TonConnect.TonConnect({
+    const connector = new TonConnectSDK.TonConnect({
       manifestUrl: 'https://whatever777.github.io/tons-of-dust-demo/manifest.json'
     });
     debug('TonConnect instance created');
